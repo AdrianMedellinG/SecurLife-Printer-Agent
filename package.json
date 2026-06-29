@@ -1,0 +1,31 @@
+{
+  "name": "securlife-printer-agent",
+  "version": "1.0.0",
+  "description": "Agente local para imprimir etiquetas de visitas en Brother QL-800/QL-810W desde React web.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "pm2:start": "pm2 startOrReload ecosystem.config.cjs --env production",
+    "pm2:stop": "pm2 stop koders-printer-agent",
+    "pm2:restart": "pm2 restart koders-printer-agent",
+    "pm2:delete": "pm2 delete koders-printer-agent",
+    "pm2:logs": "pm2 logs koders-printer-agent",
+    "pm2:status": "pm2 status",
+    "dev": "nodemon src/server.js",
+    "list-printers": "node src/list-printers.js",
+    "test-label": "node src/test-label.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "pdf-to-printer": "^5.6.0",
+    "pdfkit": "^0.15.0",
+    "pm2": "^6.0.14",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.35.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
