@@ -1,4 +1,4 @@
-# Koders Printer Agent - Brother QL-800 / QL-810W
+# SecurLife Printer Agent - Brother QL-800 / QL-810W
 
 Agente local para imprimir etiquetas de visitas desde un sistema React web en Internet.
 
@@ -25,7 +25,7 @@ Desde PowerShell o CMD como Administrador, ejecuta:
 scripts\install-node-and-copy.cmd
 ```
 
-Ese script instala Node.js LTS con npm si no existen, copia el proyecto a `C:\koders-printer-agent` sin copiar `node_modules`, `.git` ni `tmp`, y ejecuta `npm ci --omit=dev` en la carpeta final. PM2 se instala como dependencia local del proyecto.
+Ese script instala Node.js LTS con npm si no existen, copia el proyecto a `C:\securlife-printer-agent` sin copiar `node_modules`, `.git` ni `tmp`, y ejecuta `npm ci --omit=dev` en la carpeta final. PM2 se instala como dependencia local del proyecto.
 
 Para usar otra ruta:
 
@@ -36,19 +36,19 @@ scripts\install-node-and-copy.cmd -TargetPath "C:\otra-carpeta"
 Después activa el inicio automático:
 
 ```bat
-C:\koders-printer-agent\scripts\setup-auto-start.cmd
+C:\securlife-printer-agent\scripts\setup-auto-start.cmd
 ```
 
 Por defecto se crea una tarea programada que levanta el proceso con PM2 cuando inicia sesión el usuario de Windows. Esto suele ser lo más confiable para impresoras instaladas en el perfil del usuario. Si necesitas que la tarea se dispare al arranque del sistema, usa:
 
 ```bat
-C:\koders-printer-agent\scripts\setup-auto-start.cmd -Trigger AtStartup
+C:\securlife-printer-agent\scripts\setup-auto-start.cmd -Trigger AtStartup
 ```
 
 Los logs del arranque automático quedan en:
 
 ```txt
-C:\koders-printer-agent\tmp
+C:\securlife-printer-agent\tmp
 ```
 
 ## PM2
@@ -72,8 +72,8 @@ npm run pm2:delete
 Los logs principales de PM2 quedan en:
 
 ```txt
-C:\koders-printer-agent\tmp\pm2-out.log
-C:\koders-printer-agent\tmp\pm2-error.log
+C:\securlife-printer-agent\tmp\pm2-out.log
+C:\securlife-printer-agent\tmp\pm2-error.log
 ```
 
 Edita `.env` y coloca el nombre exacto de la impresora:
@@ -136,7 +136,7 @@ await fetch('http://localhost:3500/print-visit-label', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     visitante: 'Juan Perez',
-    empresa: 'Koders',
+    empresa: 'SecurLife',
     motivo: 'Visita',
     anfitrion: 'Enrique',
     fecha: new Date().toLocaleDateString('es-MX'),
