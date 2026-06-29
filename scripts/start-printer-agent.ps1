@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [string]$ProjectPath = "C:\koders-printer-agent"
+  [string]$ProjectPath = "C:\securlife-printer-agent"
 )
 
 $ErrorActionPreference = "Stop"

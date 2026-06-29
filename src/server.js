@@ -35,7 +35,7 @@ app.use(cors({
 }));
 
 app.get('/health', (req, res) => {
-  res.json({ ok: true, service: 'koders-printer-agent' });
+  res.json({ ok: true, service: 'securlife-printer-agent' });
 });
 
 app.get('/printers', async (req, res) => {
@@ -117,5 +117,5 @@ app.post('/test-print', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Koders Printer Agent en http://localhost:${port}`);
+  console.log(`SecurLife Printer Agent en http://localhost:${port}`);
 });

@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [string]$TargetPath = "C:\koders-printer-agent",
+  [string]$TargetPath = "C:\securlife-printer-agent",
   [switch]$SkipNodeInstall,
   [switch]$SkipNpmInstall
 )
@@ -76,7 +76,7 @@ if ($targetFullPath.TrimEnd("\") -ieq $sourcePath.TrimEnd("\")) {
 }
 
 if ($targetFullPath.TrimEnd("\") -ieq $targetRoot.TrimEnd("\")) {
-  throw "La carpeta destino no puede ser la raiz de la unidad. Usa una carpeta como C:\koders-printer-agent."
+  throw "La carpeta destino no puede ser la raiz de la unidad. Usa una carpeta como C:\securlife-printer-agent."
 }
 
 $sourcePrefix = $sourcePath.TrimEnd("\") + "\"

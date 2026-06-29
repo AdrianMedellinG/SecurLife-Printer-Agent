@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "koders-printer-agent",
+      name: "securlife-printer-agent",
       script: "src/server.js",
       cwd: __dirname,
       exec_mode: "fork",

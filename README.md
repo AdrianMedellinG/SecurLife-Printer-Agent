@@ -4,7 +4,7 @@ Agente local para imprimir etiquetas de visitas desde un sistema React web en In
 
 ## Requisitos en Windows 11
 
-1. Instalar el driver oficial Brother QL-800 / QL-810W.
+1. Primero instalar los drivers de la impresora Brother QL-800 / QL-810W desde [`bsq16aw1101cus.exe`](https://github.com/AdrianMedellinG/SecurLife-Printer-Agent/blob/main/bsq16aw1101cus.exe).
 2. Configurar el rollo como `DK 62mm Continuous` / `62mm x Continuous`.
 3. Instalar Node.js LTS.
 4. Ejecutar este agente en la PC donde está conectada la impresora.
@@ -80,12 +80,19 @@ Edita `.env` y coloca el nombre exacto de la impresora:
 
 ```env
 PRINTER_NAME=Brother QL-800
-ALLOWED_ORIGIN=https://tu-dominio.com
+# Puedes usar * para aceptar cualquier dominio, o separar varios con coma.
+ALLOWED_ORIGIN=*
 BODY_LIMIT=5mb
 LABEL_WIDTH_MM=62
 LABEL_HEIGHT_MM=80
 PRINT_SCALE=noscale
 PRINTER_PAPER_SIZE=
+```
+
+Para producción es más seguro usar solo los dominios de tu sistema:
+
+```env
+ALLOWED_ORIGIN=https://tu-dominio.com,https://otro-dominio.com
 ```
 
 Si salen varias etiquetas en blanco por cada impresión, revisa el tamaño de papel que Windows reporta:

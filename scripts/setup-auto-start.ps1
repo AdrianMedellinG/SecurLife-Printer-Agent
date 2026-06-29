@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-  [string]$ProjectPath = "C:\koders-printer-agent",
-  [string]$TaskName = "Koders Printer Agent",
+  [string]$ProjectPath = "C:\securlife-printer-agent",
+  [string]$TaskName = "SecurLife Printer Agent",
   [ValidateSet("AtLogOn", "AtStartup")]
   [string]$Trigger = "AtLogOn"
 )
