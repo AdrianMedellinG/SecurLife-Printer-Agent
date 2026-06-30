@@ -16,6 +16,28 @@ const allowedOrigins = allowedOrigin
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+async function assertPrinterExists(printerName) {
+  if (!printerName) return;
+
+  const printers = await printer.getPrinters();
+  const exists = printers.some((availablePrinter) =>
+    availablePrinter.name === printerName ||
+    availablePrinter.deviceId === printerName
+  );
+
+  if (!exists) {
+    const printerNames = printers
+      .map((availablePrinter) => availablePrinter.name)
+      .filter(Boolean)
+      .join(', ');
+
+    throw new Error(
+      `Impresora no encontrada: "${printerName}". ` +
+      `Impresoras disponibles: ${printerNames || 'ninguna'}`
+    );
+  }
+}
+
 app.use(express.json({ limit: bodyLimit }));
 app.use(cors({
   origin(origin, callback) {
@@ -55,19 +77,23 @@ async function printVisitLabel(payload, res) {
   const pdfPath = path.join(__dirname, '..', 'tmp', filename);
 
   try {
-    await createVisitLabelPdf(payload, pdfPath);
-
     const options = {
       pages: '1',
       copies: 1,
-      scale: 'noscale'
+      scale: process.env.PRINT_SCALE || 'noscale'
     };
 
-    if (payload.printerName || process.env.PRINTER_NAME)
-      options.printer = payload.printerName || process.env.PRINTER_NAME;
+    const printerName = payload.printerName || process.env.PRINTER_NAME;
+
+    if (printerName) {
+      await assertPrinterExists(printerName);
+      options.printer = printerName;
+    }
 
     if (process.env.PRINTER_PAPER_SIZE)
       options.paperSize = process.env.PRINTER_PAPER_SIZE;
+
+    await createVisitLabelPdf(payload, pdfPath);
 
     await printer.print(pdfPath, options);
 

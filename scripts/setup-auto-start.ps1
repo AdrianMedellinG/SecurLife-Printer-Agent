@@ -34,6 +34,7 @@ if (-not (Test-Path $runnerPath)) {
 Push-Location $projectFullPath
 try {
   & npm.cmd run pm2:start
+  & npm.cmd run pm2:save
 } finally {
   Pop-Location
 }
@@ -41,10 +42,12 @@ try {
 $argumentList = "-NoProfile -ExecutionPolicy Bypass -File `"$runnerPath`" -ProjectPath `"$projectFullPath`""
 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument $argumentList -WorkingDirectory $projectFullPath
 
+$scheduledTriggers = @(
+  New-ScheduledTaskTrigger -AtLogOn -User $currentUser
+)
+
 if ($Trigger -eq "AtStartup") {
-  $scheduledTrigger = New-ScheduledTaskTrigger -AtStartup
-} else {
-  $scheduledTrigger = New-ScheduledTaskTrigger -AtLogOn -User $currentUser
+  $scheduledTriggers += New-ScheduledTaskTrigger -AtStartup
 }
 
 $principal = New-ScheduledTaskPrincipal -UserId $currentUser -LogonType Interactive -RunLevel Highest
@@ -57,7 +60,7 @@ $settings = New-ScheduledTaskSettingsSet `
   -RestartInterval (New-TimeSpan -Minutes 1) `
   -StartWhenAvailable
 
-$task = New-ScheduledTask -Action $action -Trigger $scheduledTrigger -Principal $principal -Settings $settings
+$task = New-ScheduledTask -Action $action -Trigger $scheduledTriggers -Principal $principal -Settings $settings
 Register-ScheduledTask -TaskName $TaskName -InputObject $task -Force | Out-Null
 
 Write-Host "Tarea programada instalada: $TaskName"

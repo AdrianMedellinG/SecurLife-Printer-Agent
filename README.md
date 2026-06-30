@@ -39,16 +39,24 @@ Después activa el inicio automático:
 C:\securlife-printer-agent\scripts\setup-auto-start.cmd
 ```
 
-Por defecto se crea una tarea programada que levanta el proceso con PM2 cuando inicia sesión el usuario de Windows. Esto suele ser lo más confiable para impresoras instaladas en el perfil del usuario. Si necesitas que la tarea se dispare al arranque del sistema, usa:
+Por defecto se crea una tarea programada que levanta el proceso con PM2 cuando inicia sesión el usuario de Windows. Esto suele ser lo más confiable para impresoras instaladas en el perfil del usuario. Si necesitas que la tarea también se dispare al arranque del sistema, usa:
 
 ```bat
 C:\securlife-printer-agent\scripts\setup-auto-start.cmd -Trigger AtStartup
 ```
 
+Con `-Trigger AtStartup` se registran ambos triggers: al iniciar Windows y al iniciar sesión. El trigger de inicio de sesión evita que el agente quede apagado cuando Windows no permite usar impresoras de usuario antes de abrir la sesión.
+
 Los logs del arranque automático quedan en:
 
 ```txt
 C:\securlife-printer-agent\tmp
+```
+
+El script `start-printer-agent.ps1` normalmente lo ejecuta la tarea programada. Si necesitas correrlo manualmente desde CMD:
+
+```bat
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\securlife-printer-agent\scripts\start-printer-agent.ps1" -ProjectPath "C:\securlife-printer-agent"
 ```
 
 ## PM2
