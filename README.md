@@ -19,6 +19,26 @@ npm run list-printers
 
 `npm install` instala las dependencias del proyecto, incluyendo PM2. No es necesario instalar PM2 globalmente con `npm install -g pm2`; los comandos `npm run pm2:*` usan el PM2 local de este proyecto.
 
+### Instalación completa desde cero en Windows
+
+Para instalar todo desde cero en una computadora nueva, ejecuta como Administrador:
+
+```bat
+Instalar-SecurLife-Printer-Agent.bat
+```
+
+Ese instalador hace el flujo completo desde CMD:
+
+- Descarga el repositorio `AdrianMedellinG/SecurLife-Printer-Agent` desde GitHub.
+- Guarda el proyecto en `C:\securlife-printer-agent`.
+- Instala Node.js `22.22.3` LTS con npm desde el MSI oficial.
+- Instala `node_modules`, incluyendo PM2 local del proyecto.
+- Copia `.env.example` a `.env` si todavia no existe.
+- Ejecuta `npm run list-printers` para detectar impresoras.
+- Permite seleccionar la impresora que quedara guardada como `PRINTER_NAME` en `.env`.
+- Inicia el microservicio con PM2.
+- Pregunta si quieres activar el auto inicio usando CMD al iniciar sesion en Windows.
+
 ### Instalación automática en Windows
 
 Desde PowerShell o CMD como Administrador, ejecuta:

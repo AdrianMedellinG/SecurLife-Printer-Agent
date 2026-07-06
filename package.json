@@ -14,6 +14,7 @@
     "pm2:status": "pm2 status",
     "dev": "nodemon src/server.js",
     "list-printers": "node src/list-printers.js",
+    "configure-printer": "node scripts/configure-printer.js",
     "test-label": "node src/test-label.js"
   },
   "dependencies": {

@@ -26,4 +26,7 @@ cd /d "%PROJECT_DIR%" || exit /b 1
 
 echo [%DATE% %TIME%] Iniciando SecurLife Printer Agent con PM2...>> "%LOG_DIR%\pm2-start.log"
 call npm.cmd run pm2:start >> "%LOG_DIR%\pm2-start.log" 2>> "%LOG_DIR%\pm2-start-error.log"
+if errorlevel 1 exit /b %ERRORLEVEL%
+
+call npm.cmd run pm2:save >> "%LOG_DIR%\pm2-start.log" 2>> "%LOG_DIR%\pm2-start-error.log"
 exit /b %ERRORLEVEL%

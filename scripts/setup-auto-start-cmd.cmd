@@ -14,12 +14,6 @@ set "TASK_NAME=SecurLife Printer Agent"
 set "RUNNER_PATH=%PROJECT_DIR%\scripts\start-printer-agent.cmd"
 set "TASK_COMMAND=%ComSpec% /d /c ""%RUNNER_PATH%"""
 
-net session >nul 2>&1
-if errorlevel 1 (
-  echo Ejecuta este script desde CMD como Administrador.
-  exit /b 1
-)
-
 if not exist "%PROJECT_DIR%\package.json" (
   echo No se encontro package.json en "%PROJECT_DIR%".
   exit /b 1
@@ -46,12 +40,9 @@ echo Registrando tarea programada "%TASK_NAME%"...
 schtasks.exe /Create /TN "%TASK_NAME%" /SC ONLOGON /TR "%TASK_COMMAND%" /F
 if errorlevel 1 exit /b 1
 
-echo Iniciando agente ahora...
-call "%RUNNER_PATH%" "%PROJECT_DIR%"
+echo Iniciando agente con la tarea programada...
+schtasks.exe /Run /TN "%TASK_NAME%"
 if errorlevel 1 exit /b 1
-
-cd /d "%PROJECT_DIR%" || exit /b 1
-call npm.cmd run pm2:save
 
 echo.
 echo Tarea programada instalada: %TASK_NAME%
