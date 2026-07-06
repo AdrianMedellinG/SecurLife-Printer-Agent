@@ -6,7 +6,7 @@ Agente local para imprimir etiquetas de visitas desde un sistema React web en In
 
 1. Primero instalar los drivers de la impresora Brother QL-800 / QL-810W desde [`bsq16aw1101cus.exe`](https://github.com/AdrianMedellinG/SecurLife-Printer-Agent/blob/main/bsq16aw1101cus.exe).
 2. Configurar el rollo como `DK 62mm Continuous` / `62mm x Continuous`.
-3. Instalar Node.js LTS.
+3. Instalar Node.js 22 LTS con npm. Descarga oficial: [`node-v22.22.3-x64.msi`](https://nodejs.org/download/release/v22.22.3/node-v22.22.3-x64.msi). Tambien puedes usar la pagina general de descargas de Node.js: <https://nodejs.org/en/download>.
 4. Ejecutar este agente en la PC donde está conectada la impresora.
 
 ## Instalación
@@ -16,6 +16,8 @@ npm install
 copy .env.example .env
 npm run list-printers
 ```
+
+`npm install` instala las dependencias del proyecto, incluyendo PM2. No es necesario instalar PM2 globalmente con `npm install -g pm2`; los comandos `npm run pm2:*` usan el PM2 local de este proyecto.
 
 ### Instalación automática en Windows
 
@@ -95,7 +97,7 @@ Despues cierra ese CMD de Administrador y vuelve a iniciar el agente desde CMD n
 
 ## PM2
 
-El proyecto incluye `ecosystem.config.cjs` para ejecutar el agente con PM2:
+El proyecto incluye PM2 como dependencia local en `package.json` y tambien incluye `ecosystem.config.cjs` para ejecutar el agente:
 
 ```bash
 npm run pm2:start
