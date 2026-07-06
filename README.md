@@ -59,6 +59,40 @@ El script `start-printer-agent.ps1` normalmente lo ejecuta la tarea programada. 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\securlife-printer-agent\scripts\start-printer-agent.ps1" -ProjectPath "C:\securlife-printer-agent"
 ```
 
+### Arranque automatico usando solo CMD
+
+Si prefieres no usar PowerShell, el proyecto tambien incluye scripts `.cmd` para registrar el arranque automatico con el Programador de tareas de Windows.
+
+Desde CMD normal, ejecuta:
+
+```bat
+C:\securlife-printer-agent\scripts\setup-auto-start-cmd.cmd
+```
+
+Si el proyecto esta en otra ruta:
+
+```bat
+C:\ruta\al\proyecto\scripts\setup-auto-start-cmd.cmd "C:\ruta\al\proyecto"
+```
+
+Ese script registra una tarea llamada `SecurLife Printer Agent` que ejecuta:
+
+```bat
+scripts\start-printer-agent.cmd
+```
+
+La tarea se dispara al iniciar sesion el usuario de Windows despues de reiniciar la computadora. Esto es intencional: normalmente las impresoras instaladas en Windows estan disponibles correctamente hasta que el usuario inicia sesion.
+
+El script tambien inicia el agente en ese momento y guarda el estado de PM2 con `npm run pm2:save`.
+
+Si PM2 muestra `connect EPERM //./pipe/rpc.sock` o `connect EPERM //./pipe/interactor.sock`, normalmente hay un daemon PM2 levantado como Administrador y otro como usuario normal. Limpialo una sola vez desde CMD como Administrador:
+
+```bat
+C:\securlife-printer-agent\scripts\reset-pm2-eperm.cmd
+```
+
+Despues cierra ese CMD de Administrador y vuelve a iniciar el agente desde CMD normal o con `Impresora.bat`.
+
 ## PM2
 
 El proyecto incluye `ecosystem.config.cjs` para ejecutar el agente con PM2:
@@ -82,6 +116,29 @@ Los logs principales de PM2 quedan en:
 ```txt
 C:\securlife-printer-agent\tmp\pm2-out.log
 C:\securlife-printer-agent\tmp\pm2-error.log
+```
+
+## Menu rapido en Windows
+
+Para arrancar y revisar el microservicio de la impresora de forma mas sencilla, puedes usar el archivo:
+
+```bat
+Impresora.bat
+```
+
+Este menu se ejecuta desde la carpeta del proyecto y permite:
+
+- Iniciar el agente con PM2 y guardar el proceso.
+- Ver el estado del proceso en PM2.
+- Ver los logs del agente.
+- Reiniciar o detener el agente.
+- Listar las impresoras instaladas en Windows.
+- Imprimir una etiqueta de prueba.
+
+La opcion `1) Iniciar agente con PM2` deja levantado el microservicio local de impresion. Despues de iniciarlo, el sistema web puede llamar al agente en:
+
+```txt
+http://localhost:3500
 ```
 
 Edita `.env` y coloca el nombre exacto de la impresora:
@@ -126,6 +183,14 @@ npm run test-label
 Cuando se manda una foto de visitante en `fotoVisitante`, `foto`, `photoBase64` o `visitorPhotoBase64`, el agente la convierte a blanco y negro antes de colocarla en el PDF. Esto ayuda a que la impresión salga mejor en impresoras Brother QL monocromáticas.
 
 ## Iniciar agente
+
+La forma mas sencilla en Windows es abrir `Impresora.bat` y seleccionar:
+
+```txt
+1) Iniciar agente con PM2
+```
+
+Tambien puedes iniciarlo manualmente con Node:
 
 ```bash
 npm start
