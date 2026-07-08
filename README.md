@@ -12,7 +12,7 @@ Agente local para imprimir etiquetas de visitas desde un sistema React web en In
    ![Configuracion del rollo Brother](brother.jpeg)
 
 3. Instalar Node.js 22 LTS con npm. Descarga oficial: [`node-v22.22.3-x64.msi`](https://nodejs.org/download/release/v22.22.3/node-v22.22.3-x64.msi). Tambien puedes usar la pagina general de descargas de Node.js: <https://nodejs.org/en/download>.
-4. Ejecutar este agente en la PC donde está conectada la impresora.
+4. Descargar [`Instalar-SecurLife-Printer-Agent.bat`](https://github.com/AdrianMedellinG/SecurLife-Printer-Agent/blob/main/Instalar-SecurLife-Printer-Agent.bat) en la PC donde esta conectada la impresora y ejecutarlo como Administrador. Despues continua con la seccion **Instalacion completa desde cero en Windows**.
 
 
 ## Instalación completa desde cero en Windows
