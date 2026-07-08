@@ -115,6 +115,18 @@ C:\securlife-printer-agent\scripts\reset-pm2-eperm.cmd
 
 Despues cierra ese CMD de Administrador y vuelve a iniciar el agente desde CMD normal o con `Impresora.bat`.
 
+Para quitar el autoarranque y detener el agente PM2, ejecuta desde CMD como Administrador:
+
+```bat
+C:\securlife-printer-agent\scripts\uninstall-auto-start-cmd.cmd
+```
+
+Tambien puedes usar:
+
+```bat
+C:\securlife-printer-agent\Desinstalar-Autoarranque.bat
+```
+
 ## PM2
 
 El proyecto incluye PM2 como dependencia local en `package.json` y tambien incluye `ecosystem.config.cjs` para ejecutar el agente:
