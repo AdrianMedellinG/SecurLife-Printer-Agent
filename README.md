@@ -39,7 +39,7 @@ Ese instalador hace el flujo completo desde CMD:
 - Inicia el microservicio con PM2.
 - Pregunta si quieres activar el auto inicio oculto al iniciar sesion en Windows.
 
-### Autoarranque en Windows
+### Fin de la instalacion completa
 
 El instalador puede registrar automaticamente el autoarranque cuando pregunta:
 
@@ -47,7 +47,17 @@ El instalador puede registrar automaticamente el autoarranque cuando pregunta:
 Quieres activar el auto inicio con CMD al iniciar sesion? (S/N):
 ```
 
-Si necesitas activarlo despues, ejecuta desde CMD:
+Si respondes `S`, con eso queda instalado todo: el proyecto en `C:\securlife-printer-agent`, las dependencias, la impresora configurada en `.env`, el microservicio iniciado con PM2 y el autoarranque registrado en Windows.
+
+Despues de eso puedes cerrar la ventana del instalador. Para validar que el agente esta activo, abre:
+
+```txt
+http://localhost:3500/health
+```
+
+### Autoarranque en Windows si no se activo en la instalacion
+
+Si respondiste `N`, cerraste el instalador antes de activar el autoarranque, o necesitas configurarlo despues, ejecuta desde CMD:
 
 ```bat
 C:\securlife-printer-agent\scripts\setup-auto-start-cmd.cmd
