@@ -1,0 +1,6 @@
+[06/07/2026 14:58:08.60] Iniciando SecurLife Printer Agent con PM2...
+
+> securlife-printer-agent@1.0.0 pm2:start
+> pm2 startOrReload ecosystem.config.cjs --env production
+
+[PM2] Spawning PM2 daemon with pm2_home=C:\Users\AdrianMedellin\.pm2

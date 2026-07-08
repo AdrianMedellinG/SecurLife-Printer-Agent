@@ -55,6 +55,11 @@ if exist "%WORK_DIR%" rmdir /s /q "%WORK_DIR%"
 mkdir "%WORK_DIR%" >nul 2>&1
 
 echo.
+echo [0/7] Revisando y deteniendo procesos PM2 previos...
+echo [0/7] Revisando y deteniendo procesos PM2 previos... >> "%LOG_PATH%"
+call :CLEAN_PM2_DAEMONS
+
+echo.
 echo [1/7] Instalando Node.js %NODE_VERSION% LTS con npm...
 echo [1/7] Revisando Node.js... >> "%LOG_PATH%"
 set "CURRENT_NODE="
@@ -177,12 +182,30 @@ cd /d "%TARGET_DIR%" || goto FAIL
 
 echo.
 echo [5/7] Instalando node_modules y PM2 local...
-if exist package-lock.json (
-  call npm.cmd ci --omit=dev
-) else (
-  call npm.cmd install --omit=dev
+set "NEEDS_NPM_INSTALL=1"
+if exist "node_modules\pm2" if exist "node_modules\pdf-to-printer" if exist "node_modules\sharp" set "NEEDS_NPM_INSTALL=0"
+
+if "%NEEDS_NPM_INSTALL%"=="0" (
+  echo node_modules ya existe con las dependencias principales. Se omite reinstalacion.
+  echo node_modules ya existe con las dependencias principales. Se omite reinstalacion. >> "%LOG_PATH%"
+  goto NPM_DONE
 )
+
+if not exist package-lock.json goto NPM_INSTALL
+
+echo Instalando dependencias con npm ci...
+echo Instalando dependencias con npm ci... >> "%LOG_PATH%"
+call npm.cmd ci --omit=dev
 if errorlevel 1 goto FAIL
+goto NPM_DONE
+
+:NPM_INSTALL
+echo Instalando dependencias con npm install...
+echo Instalando dependencias con npm install... >> "%LOG_PATH%"
+call npm.cmd install --omit=dev
+if errorlevel 1 goto FAIL
+
+:NPM_DONE
 
 if not exist ".env" (
   echo Copiando .env.example a .env...
@@ -217,6 +240,9 @@ if exist "scripts\configure-printer.js" (
 
 echo.
 echo [7/7] Iniciando microservicio con PM2...
+echo Limpiando daemons PM2 previos para evitar EPERM en Windows...
+echo Limpiando daemons PM2 previos... >> "%LOG_PATH%"
+call :CLEAN_PM2_DAEMONS
 call :START_AGENT_WITH_TASK
 if errorlevel 1 (
   echo.
@@ -254,11 +280,44 @@ echo Listo.
 pause
 exit /b 0
 
+:CLEAN_PM2_DAEMONS
+for /f "usebackq delims=" %%L in (`wmic process where "name='node.exe'" get CommandLine^,ProcessId 2^>nul ^| findstr /i /l /c:"\pm2\lib\Daemon.js"`) do (
+  set "LINE=%%L"
+  set "PID="
+  for %%A in (!LINE!) do set "PID_RAW=%%A"
+  set /a "PID=!PID_RAW!" >nul 2>&1
+  if defined PID (
+    echo Cerrando daemon PM2 PID !PID!...
+    echo Cerrando daemon PM2 PID !PID!... >> "%LOG_PATH%"
+    taskkill /PID !PID! /T /F >nul 2>&1
+  )
+)
+
+for /f "tokens=2 delims==" %%P in ('wmic process where "name='node.exe' and CommandLine is null" get ProcessId /value 2^>nul ^| find "="') do (
+  set "PID_RAW=%%P"
+  set "PID="
+  set /a "PID=!PID_RAW!" >nul 2>&1
+  if defined PID (
+    echo Cerrando node.exe sin CommandLine PID !PID!...
+    echo Cerrando node.exe sin CommandLine PID !PID!... >> "%LOG_PATH%"
+    taskkill /PID !PID! /T /F >nul 2>&1
+  )
+)
+
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:":3500 .*LISTENING"') do (
+  echo Cerrando proceso que escucha puerto 3500 PID %%P...
+  echo Cerrando proceso que escucha puerto 3500 PID %%P... >> "%LOG_PATH%"
+  taskkill /PID %%P /T /F >nul 2>&1
+)
+
+ping 127.0.0.1 -n 3 >nul
+exit /b 0
+
 :START_AGENT_WITH_TASK
 set "TASK_NOW=SecurLife Printer Agent Start Now"
 set "TASK_COMMAND=%ComSpec% /d /c ""%TARGET_DIR%\scripts\start-printer-agent.cmd" "%TARGET_DIR%"""
 
-schtasks.exe /Create /TN "%TASK_NOW%" /SC ONCE /ST 00:00 /TR "%TASK_COMMAND%" /F >nul
+schtasks.exe /Create /TN "%TASK_NOW%" /SC ONLOGON /TR "%TASK_COMMAND%" /F >nul
 if errorlevel 1 exit /b 1
 
 schtasks.exe /Run /TN "%TASK_NOW%" >nul

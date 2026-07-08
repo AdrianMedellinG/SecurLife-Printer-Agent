@@ -1,0 +1,28 @@
+unexpected error
+Error: connect EPERM //./pipe/interactor.sock
+    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'connect',
+  address: '//./pipe/interactor.sock'
+}
+connect EPERM //./pipe/rpc.sock
+node:events:497
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: connect EPERM //./pipe/rpc.sock
+    at PipeConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+Emitted 'error' event on ReqSocket instance at:
+    at Socket.<anonymous> (C:\wamp64\www\Securelife\koders-printer-agent\node_modules\pm2-axon\lib\sockets\sock.js:201:49)
+    at Socket.emit (node:events:519:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'connect',
+  address: '//./pipe/rpc.sock'
+}
+
+Node.js v22.22.2

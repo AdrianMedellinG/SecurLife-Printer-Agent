@@ -2,11 +2,14 @@ require('dotenv').config();
 
 const fs = require('fs');  
 const path = require('path');
+const { execFile } = require('child_process');
+const { promisify } = require('util');
 const express = require('express');
 const cors = require('cors');
 const printer = require('pdf-to-printer');
 const { createVisitLabelPdf } = require('./label');
 
+const execFileAsync = promisify(execFile);
 const app = express();
 const port = Number(process.env.PORT || 3500);
 const bodyLimit = process.env.BODY_LIMIT || '5mb';
@@ -16,10 +19,39 @@ const allowedOrigins = allowedOrigin
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+function normalizePrinterList(value) {
+  if (!value) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+async function getPrintersHidden() {
+  const command = [
+    'Get-CimInstance Win32_Printer -Property DeviceID,Name,PrinterPaperNames',
+    'Select-Object DeviceID,Name,PrinterPaperNames',
+    'ConvertTo-Json -Depth 4'
+  ].join(' | ');
+
+  const { stdout } = await execFileAsync(
+    'powershell.exe',
+    ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', command],
+    { windowsHide: true, maxBuffer: 1024 * 1024 }
+  );
+
+  const parsed = stdout.trim() ? JSON.parse(stdout) : [];
+
+  return normalizePrinterList(parsed)
+    .filter((availablePrinter) => availablePrinter && availablePrinter.Name)
+    .map((availablePrinter) => ({
+      deviceId: availablePrinter.DeviceID || '',
+      name: availablePrinter.Name || '',
+      paperSizes: normalizePrinterList(availablePrinter.PrinterPaperNames)
+    }));
+}
+
 async function assertPrinterExists(printerName) {
   if (!printerName) return;
 
-  const printers = await printer.getPrinters();
+  const printers = await getPrintersHidden();
   const exists = printers.some((availablePrinter) =>
     availablePrinter.name === printerName ||
     availablePrinter.deviceId === printerName
@@ -61,7 +93,7 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/printers', async (req, res) => {
-  const printers = await printer.getPrinters();
+  const printers = await getPrintersHidden();
   res.json({ printers });
 });
 
