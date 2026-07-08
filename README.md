@@ -9,17 +9,8 @@ Agente local para imprimir etiquetas de visitas desde un sistema React web en In
 3. Instalar Node.js 22 LTS con npm. Descarga oficial: [`node-v22.22.3-x64.msi`](https://nodejs.org/download/release/v22.22.3/node-v22.22.3-x64.msi). Tambien puedes usar la pagina general de descargas de Node.js: <https://nodejs.org/en/download>.
 4. Ejecutar este agente en la PC donde está conectada la impresora.
 
-## Instalación
 
-```bash
-npm install
-copy .env.example .env
-npm run list-printers
-```
-
-`npm install` instala las dependencias del proyecto, incluyendo PM2. No es necesario instalar PM2 globalmente con `npm install -g pm2`; los comandos `npm run pm2:*` usan el PM2 local de este proyecto.
-
-### Instalación completa desde cero en Windows
+## Instalación completa desde cero en Windows
 
 Para instalar todo desde cero en una computadora nueva, ejecuta como Administrador:
 
