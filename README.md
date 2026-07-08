@@ -31,61 +31,23 @@ Ese instalador hace el flujo completo desde CMD:
 
 - Descarga el repositorio `AdrianMedellinG/SecurLife-Printer-Agent` desde GitHub.
 - Guarda el proyecto en `C:\securlife-printer-agent`.
-- Instala Node.js `22.22.3` LTS con npm desde el MSI oficial.
+- Instala Node.js `22.22.3` LTS con npm desde el MSI oficial si no existe una version compatible. Si ya existe Node.js 22, 23 o 24, omite la instalacion de Node y continua.
 - Instala `node_modules`, incluyendo PM2 local del proyecto.
 - Copia `.env.example` a `.env` si todavia no existe.
 - Ejecuta `npm run list-printers` para detectar impresoras.
 - Permite seleccionar la impresora que quedara guardada como `PRINTER_NAME` en `.env`.
 - Inicia el microservicio con PM2.
-- Pregunta si quieres activar el auto inicio usando CMD al iniciar sesion en Windows.
+- Pregunta si quieres activar el auto inicio oculto al iniciar sesion en Windows.
 
-### Instalación automática en Windows
+### Autoarranque en Windows
 
-Desde PowerShell o CMD como Administrador, ejecuta:
-
-```bat
-scripts\install-node-and-copy.cmd
-```
-
-Ese script instala Node.js LTS con npm si no existen, copia el proyecto a `C:\securlife-printer-agent` sin copiar `node_modules`, `.git` ni `tmp`, y ejecuta `npm ci --omit=dev` en la carpeta final. PM2 se instala como dependencia local del proyecto.
-
-Para usar otra ruta:
-
-```bat
-scripts\install-node-and-copy.cmd -TargetPath "C:\otra-carpeta"
-```
-
-Después activa el inicio automático:
-
-```bat
-C:\securlife-printer-agent\scripts\setup-auto-start.cmd
-```
-
-Por defecto se crea una tarea programada que levanta el proceso con PM2 cuando inicia sesión el usuario de Windows. Esto suele ser lo más confiable para impresoras instaladas en el perfil del usuario. Si necesitas que la tarea también se dispare al arranque del sistema, usa:
-
-```bat
-C:\securlife-printer-agent\scripts\setup-auto-start.cmd -Trigger AtStartup
-```
-
-Con `-Trigger AtStartup` se registran ambos triggers: al iniciar Windows y al iniciar sesión. El trigger de inicio de sesión evita que el agente quede apagado cuando Windows no permite usar impresoras de usuario antes de abrir la sesión.
-
-Los logs del arranque automático quedan en:
+El instalador puede registrar automaticamente el autoarranque cuando pregunta:
 
 ```txt
-C:\securlife-printer-agent\tmp
+Quieres activar el auto inicio con CMD al iniciar sesion? (S/N):
 ```
 
-El script `start-printer-agent.ps1` normalmente lo ejecuta la tarea programada. Si necesitas correrlo manualmente desde CMD:
-
-```bat
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\securlife-printer-agent\scripts\start-printer-agent.ps1" -ProjectPath "C:\securlife-printer-agent"
-```
-
-### Arranque automatico usando solo CMD
-
-Si prefieres no usar PowerShell, el proyecto tambien incluye scripts `.cmd` para registrar el arranque automatico con el Programador de tareas de Windows.
-
-Desde CMD normal, ejecuta:
+Si necesitas activarlo despues, ejecuta desde CMD:
 
 ```bat
 C:\securlife-printer-agent\scripts\setup-auto-start-cmd.cmd
@@ -100,20 +62,22 @@ C:\ruta\al\proyecto\scripts\setup-auto-start-cmd.cmd "C:\ruta\al\proyecto"
 Ese script registra una tarea llamada `SecurLife Printer Agent` que ejecuta:
 
 ```bat
-scripts\start-printer-agent.cmd
+wscript.exe "C:\securlife-printer-agent\scripts\start-printer-agent-hidden.vbs"
 ```
 
-La tarea se dispara al iniciar sesion el usuario de Windows despues de reiniciar la computadora. Esto es intencional: normalmente las impresoras instaladas en Windows estan disponibles correctamente hasta que el usuario inicia sesion.
+La tarea se dispara al iniciar sesion el usuario de Windows despues de reiniciar la computadora. Esto es intencional: normalmente las impresoras instaladas en Windows estan disponibles correctamente hasta que el usuario inicia sesion. El VBS ejecuta `scripts\start-printer-agent.cmd` oculto para no mostrar una ventana negra de CMD.
 
-El script tambien inicia el agente en ese momento y guarda el estado de PM2 con `npm run pm2:save`.
-
-Si PM2 muestra `connect EPERM //./pipe/rpc.sock` o `connect EPERM //./pipe/interactor.sock`, normalmente hay un daemon PM2 levantado como Administrador y otro como usuario normal. Limpialo una sola vez desde CMD como Administrador:
+El runner de arranque limpia daemons PM2 previos, libera el puerto `3500`, usa el PM2 local de `node_modules` e inicia el agente con:
 
 ```bat
-C:\securlife-printer-agent\scripts\reset-pm2-eperm.cmd
+node_modules\.bin\pm2.cmd startOrReload ecosystem.config.cjs --env production
 ```
 
-Despues cierra ese CMD de Administrador y vuelve a iniciar el agente desde CMD normal o con `Impresora.bat`.
+Los logs del arranque automatico quedan en:
+
+```txt
+C:\securlife-printer-agent\tmp
+```
 
 Para quitar el autoarranque y detener el agente PM2, ejecuta desde CMD como Administrador:
 
@@ -125,6 +89,12 @@ Tambien puedes usar:
 
 ```bat
 C:\securlife-printer-agent\Desinstalar-Autoarranque.bat
+```
+
+Si PM2 muestra `connect EPERM //./pipe/rpc.sock` o `connect EPERM //./pipe/interactor.sock`, normalmente hay un daemon PM2 levantado como Administrador y otro como usuario normal. El arranque automatico ya intenta limpiarlo, pero tambien puedes ejecutar manualmente:
+
+```bat
+C:\securlife-printer-agent\scripts\reset-pm2-eperm.cmd
 ```
 
 ## PM2

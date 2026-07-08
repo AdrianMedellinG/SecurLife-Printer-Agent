@@ -158,43 +158,30 @@ if exist "%~dp0scripts\configure-printer.js" copy /Y "%~dp0scripts\configure-pri
 if exist "%~dp0scripts\start-printer-agent.cmd" copy /Y "%~dp0scripts\start-printer-agent.cmd" "%TARGET_DIR%\scripts\start-printer-agent.cmd" >nul
 if exist "%~dp0scripts\start-printer-agent-hidden.vbs" copy /Y "%~dp0scripts\start-printer-agent-hidden.vbs" "%TARGET_DIR%\scripts\start-printer-agent-hidden.vbs" >nul
 if exist "%~dp0scripts\setup-auto-start-cmd.cmd" copy /Y "%~dp0scripts\setup-auto-start-cmd.cmd" "%TARGET_DIR%\scripts\setup-auto-start-cmd.cmd" >nul
+if exist "%~dp0scripts\uninstall-auto-start-cmd.cmd" copy /Y "%~dp0scripts\uninstall-auto-start-cmd.cmd" "%TARGET_DIR%\scripts\uninstall-auto-start-cmd.cmd" >nul
 if exist "%~dp0scripts\reset-pm2-eperm.cmd" copy /Y "%~dp0scripts\reset-pm2-eperm.cmd" "%TARGET_DIR%\scripts\reset-pm2-eperm.cmd" >nul
 if exist "%~dp0scripts\repair-pm2-windows.cmd" copy /Y "%~dp0scripts\repair-pm2-windows.cmd" "%TARGET_DIR%\scripts\repair-pm2-windows.cmd" >nul
 if exist "%~dp0Impresora.bat" copy /Y "%~dp0Impresora.bat" "%TARGET_DIR%\Impresora.bat" >nul
+if exist "%~dp0Desinstalar-Autoarranque.bat" copy /Y "%~dp0Desinstalar-Autoarranque.bat" "%TARGET_DIR%\Desinstalar-Autoarranque.bat" >nul
 
 if not exist "%TARGET_DIR%\scripts\start-printer-agent.cmd" (
-  echo Creando scripts\start-printer-agent.cmd...
-  (
-    echo @echo off
-    echo setlocal EnableExtensions
-    echo set "PROJECT_DIR=%%~1"
-    echo if "%%PROJECT_DIR%%"=="" set "PROJECT_DIR=%%~dp0.."
-    echo for %%%%I in ^("%%PROJECT_DIR%%"^) do set "PROJECT_DIR=%%%%~fI"
-    echo set "PATH=%%ProgramFiles%%\nodejs;%%APPDATA%%\npm;%%PATH%%"
-    echo cd /d "%%PROJECT_DIR%%" ^|^| exit /b 1
-    echo call npm.cmd run pm2:start
-    echo if errorlevel 1 exit /b %%ERRORLEVEL%%
-    echo call npm.cmd run pm2:save
-    echo exit /b %%ERRORLEVEL%%
-  ) > "%TARGET_DIR%\scripts\start-printer-agent.cmd"
+  echo Falta scripts\start-printer-agent.cmd en el proyecto descargado.
+  goto FAIL
 )
 
 if not exist "%TARGET_DIR%\scripts\start-printer-agent-hidden.vbs" (
-  echo Creando scripts\start-printer-agent-hidden.vbs...
-  (
-    echo Option Explicit
-    echo Dim shell
-    echo Dim fso
-    echo Dim scriptDir
-    echo Dim projectDir
-    echo Dim command
-    echo Set shell = CreateObject^("WScript.Shell"^)
-    echo Set fso = CreateObject^("Scripting.FileSystemObject"^)
-    echo scriptDir = fso.GetParentFolderName^(WScript.ScriptFullName^)
-    echo projectDir = fso.GetParentFolderName^(scriptDir^)
-    echo command = "cmd.exe /d /c """ ^& scriptDir ^& "\start-printer-agent.cmd"" """ ^& projectDir ^& """"
-    echo shell.Run command, 0, False
-  ) > "%TARGET_DIR%\scripts\start-printer-agent-hidden.vbs"
+  echo Falta scripts\start-printer-agent-hidden.vbs en el proyecto descargado.
+  goto FAIL
+)
+
+if not exist "%TARGET_DIR%\scripts\setup-auto-start-cmd.cmd" (
+  echo Falta scripts\setup-auto-start-cmd.cmd en el proyecto descargado.
+  goto FAIL
+)
+
+if not exist "%TARGET_DIR%\scripts\uninstall-auto-start-cmd.cmd" (
+  echo Falta scripts\uninstall-auto-start-cmd.cmd en el proyecto descargado.
+  goto FAIL
 )
 
 cd /d "%TARGET_DIR%" || goto FAIL
@@ -281,17 +268,8 @@ echo.
 set "AUTO_START="
 set /p AUTO_START=Quieres activar el auto inicio con CMD al iniciar sesion? (S/N): 
 if /I "!AUTO_START:~0,1!"=="S" (
-  if exist scripts\setup-auto-start-cmd.cmd (
-    call scripts\setup-auto-start-cmd.cmd "%TARGET_DIR%"
-    if errorlevel 1 goto FAIL
-  ) else (
-    set "AUTO_TASK_NAME=SecurLife Printer Agent"
-    set "AUTO_TASK_COMMAND=wscript.exe ""%TARGET_DIR%\scripts\start-printer-agent-hidden.vbs"""
-    schtasks.exe /Create /TN "!AUTO_TASK_NAME!" /SC ONLOGON /TR "!AUTO_TASK_COMMAND!" /F
-    if errorlevel 1 goto FAIL
-    schtasks.exe /Run /TN "!AUTO_TASK_NAME!"
-    if errorlevel 1 goto FAIL
-  )
+  call scripts\setup-auto-start-cmd.cmd "%TARGET_DIR%"
+  if errorlevel 1 goto FAIL
   schtasks.exe /Query /TN "SecurLife Printer Agent" >nul 2>&1
   if errorlevel 1 (
     echo No se pudo confirmar la tarea de auto inicio.
