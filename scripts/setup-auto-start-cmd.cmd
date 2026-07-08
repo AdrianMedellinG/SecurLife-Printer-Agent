@@ -12,7 +12,8 @@ for %%I in ("%PROJECT_DIR%") do set "PROJECT_DIR=%%~fI"
 
 set "TASK_NAME=SecurLife Printer Agent"
 set "RUNNER_PATH=%PROJECT_DIR%\scripts\start-printer-agent.cmd"
-set "TASK_COMMAND=%ComSpec% /d /c ""%RUNNER_PATH%"""
+set "HIDDEN_RUNNER_PATH=%PROJECT_DIR%\scripts\start-printer-agent-hidden.vbs"
+set "TASK_COMMAND=wscript.exe ""%HIDDEN_RUNNER_PATH%"""
 
 if not exist "%PROJECT_DIR%\package.json" (
   echo No se encontro package.json en "%PROJECT_DIR%".
@@ -21,6 +22,11 @@ if not exist "%PROJECT_DIR%\package.json" (
 
 if not exist "%RUNNER_PATH%" (
   echo No se encontro "%RUNNER_PATH%".
+  exit /b 1
+)
+
+if not exist "%HIDDEN_RUNNER_PATH%" (
+  echo No se encontro "%HIDDEN_RUNNER_PATH%".
   exit /b 1
 )
 
@@ -59,6 +65,6 @@ echo Uso:
 echo   scripts\setup-auto-start-cmd.cmd
 echo   scripts\setup-auto-start-cmd.cmd "C:\ruta\al\proyecto"
 echo.
-echo Registra una tarea programada de Windows que inicia PM2 con este proyecto
-echo usando cmd.exe al iniciar sesion el usuario.
+echo Registra una tarea programada de Windows que inicia PM2 oculto
+echo al iniciar sesion el usuario.
 exit /b 0

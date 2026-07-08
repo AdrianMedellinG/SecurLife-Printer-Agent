@@ -156,6 +156,7 @@ if %ROBOCOPY_EXIT% GTR 7 (
 if not exist "%TARGET_DIR%\scripts" mkdir "%TARGET_DIR%\scripts" >nul 2>&1
 if exist "%~dp0scripts\configure-printer.js" copy /Y "%~dp0scripts\configure-printer.js" "%TARGET_DIR%\scripts\configure-printer.js" >nul
 if exist "%~dp0scripts\start-printer-agent.cmd" copy /Y "%~dp0scripts\start-printer-agent.cmd" "%TARGET_DIR%\scripts\start-printer-agent.cmd" >nul
+if exist "%~dp0scripts\start-printer-agent-hidden.vbs" copy /Y "%~dp0scripts\start-printer-agent-hidden.vbs" "%TARGET_DIR%\scripts\start-printer-agent-hidden.vbs" >nul
 if exist "%~dp0scripts\setup-auto-start-cmd.cmd" copy /Y "%~dp0scripts\setup-auto-start-cmd.cmd" "%TARGET_DIR%\scripts\setup-auto-start-cmd.cmd" >nul
 if exist "%~dp0scripts\reset-pm2-eperm.cmd" copy /Y "%~dp0scripts\reset-pm2-eperm.cmd" "%TARGET_DIR%\scripts\reset-pm2-eperm.cmd" >nul
 if exist "%~dp0scripts\repair-pm2-windows.cmd" copy /Y "%~dp0scripts\repair-pm2-windows.cmd" "%TARGET_DIR%\scripts\repair-pm2-windows.cmd" >nul
@@ -176,6 +177,24 @@ if not exist "%TARGET_DIR%\scripts\start-printer-agent.cmd" (
     echo call npm.cmd run pm2:save
     echo exit /b %%ERRORLEVEL%%
   ) > "%TARGET_DIR%\scripts\start-printer-agent.cmd"
+)
+
+if not exist "%TARGET_DIR%\scripts\start-printer-agent-hidden.vbs" (
+  echo Creando scripts\start-printer-agent-hidden.vbs...
+  (
+    echo Option Explicit
+    echo Dim shell
+    echo Dim fso
+    echo Dim scriptDir
+    echo Dim projectDir
+    echo Dim command
+    echo Set shell = CreateObject^("WScript.Shell"^)
+    echo Set fso = CreateObject^("Scripting.FileSystemObject"^)
+    echo scriptDir = fso.GetParentFolderName^(WScript.ScriptFullName^)
+    echo projectDir = fso.GetParentFolderName^(scriptDir^)
+    echo command = "cmd.exe /d /c """ ^& scriptDir ^& "\start-printer-agent.cmd"" """ ^& projectDir ^& """"
+    echo shell.Run command, 0, False
+  ) > "%TARGET_DIR%\scripts\start-printer-agent-hidden.vbs"
 )
 
 cd /d "%TARGET_DIR%" || goto FAIL
@@ -267,7 +286,7 @@ if /I "%AUTO_START%"=="S" (
     if errorlevel 1 goto FAIL
   ) else (
     set "AUTO_TASK_NAME=SecurLife Printer Agent"
-    set "AUTO_TASK_COMMAND=%ComSpec% /d /c ""%TARGET_DIR%\scripts\start-printer-agent.cmd" "%TARGET_DIR%"""
+    set "AUTO_TASK_COMMAND=wscript.exe ""%TARGET_DIR%\scripts\start-printer-agent-hidden.vbs"""
     schtasks.exe /Create /TN "!AUTO_TASK_NAME!" /SC ONLOGON /TR "!AUTO_TASK_COMMAND!" /F
     if errorlevel 1 goto FAIL
     schtasks.exe /Run /TN "!AUTO_TASK_NAME!"
@@ -277,8 +296,9 @@ if /I "%AUTO_START%"=="S" (
 
 echo.
 echo Listo.
-pause
-exit /b 0
+echo Presiona una tecla para cerrar esta ventana...
+pause >nul
+exit
 
 :CLEAN_PM2_DAEMONS
 for /f "usebackq delims=" %%L in (`wmic process where "name='node.exe'" get CommandLine^,ProcessId 2^>nul ^| findstr /i /l /c:"\pm2\lib\Daemon.js"`) do (
