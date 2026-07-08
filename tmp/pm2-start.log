@@ -4,3 +4,19 @@
 > pm2 startOrReload ecosystem.config.cjs --env production
 
 [PM2] Spawning PM2 daemon with pm2_home=C:\Users\AdrianMedellin\.pm2
+[08/07/2026  9:46:41.72] Iniciando SecurLife Printer Agent con PM2...
+[08/07/2026  9:46:41.72] Limpiando daemons PM2 previos...
+[08/07/2026  9:46:41.72] Cerrando daemon PM2 PID 17452...
+[08/07/2026  9:46:42.03] Cerrando interactor PM2 PID 17604...
+[PM2] Spawning PM2 daemon with pm2_home=C:\Users\AdrianMedellin\.pm2
+[PM2 I/O] Using: Public key: ivepfrn4v1avy78 | Private key: f12k3tqhlvuh0t5 | Machine name: MrPresident-0afd
+[PM2] PM2 Successfully daemonized
+[PM2][WARN] Applications securlife-printer-agent not running, starting...
+[PM2] App [securlife-printer-agent] launched (1 instances)
+┌────┬────────────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼────────────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ securlife-printer-agent    │ default     │ 1.0.0   │ fork    │ 10312    │ 0s     │ 0    │ online    │ 0%       │ 47.5mb   │ adria    │ disabled │
+└────┴────────────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in C:\Users\AdrianMedellin\.pm2\dump.pm2
