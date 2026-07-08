@@ -280,7 +280,7 @@ echo.
 
 set "AUTO_START="
 set /p AUTO_START=Quieres activar el auto inicio con CMD al iniciar sesion? (S/N): 
-if /I "%AUTO_START%"=="S" (
+if /I "!AUTO_START:~0,1!"=="S" (
   if exist scripts\setup-auto-start-cmd.cmd (
     call scripts\setup-auto-start-cmd.cmd "%TARGET_DIR%"
     if errorlevel 1 goto FAIL
@@ -292,6 +292,15 @@ if /I "%AUTO_START%"=="S" (
     schtasks.exe /Run /TN "!AUTO_TASK_NAME!"
     if errorlevel 1 goto FAIL
   )
+  schtasks.exe /Query /TN "SecurLife Printer Agent" >nul 2>&1
+  if errorlevel 1 (
+    echo No se pudo confirmar la tarea de auto inicio.
+    goto FAIL
+  ) else (
+    echo Auto inicio instalado correctamente: SecurLife Printer Agent
+  )
+) else (
+  echo Auto inicio omitido.
 )
 
 echo.
